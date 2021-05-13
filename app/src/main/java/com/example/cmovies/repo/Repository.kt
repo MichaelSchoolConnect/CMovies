@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.preference.PreferenceManager
 import com.example.cmovies.network.NetworkUtils
-import com.example.cmovies.pojo.Movies
+import com.example.cmovies.model.ContentData
 import com.example.cmovies.thread.AppExecutors
 import org.json.JSONException
 import org.json.JSONObject
@@ -16,7 +16,8 @@ import java.net.URL
 
 class MyRepository {
 
-    private val mutableMoviesLiveData: MutableLiveData<List<Movies>> = MutableLiveData<List<Movies>>()
+    private val mutableContentDataLiveData: MutableLiveData<List<ContentData>> =
+            MutableLiveData<List<ContentData>>()
 
     companion object{
         fun getInstance(): MyRepository? {
@@ -50,7 +51,7 @@ class MyRepository {
         val executors = AppExecutors()
         executors.executorService.execute {
             Log.i("Repo class: ", "getMovies() function is called.")
-            val data: MutableList<Movies> = ArrayList()
+            val data: MutableList<ContentData> = ArrayList()
             val url: URL = NetworkUtils.buildUrl(searchList)!!
             var result: String? = null
 
@@ -69,20 +70,20 @@ class MyRepository {
 
                     //Get objects from the JSONArray.
                     val item = jsonArray.getJSONObject(i)
-                    val movieData = Movies(item.getString("Poster"),item.getString("Title"))
+                    val movieData = ContentData(item.getString("Poster"),item.getString("Title"))
 
                     //Add the data into an ArrayList.
                     data.add(movieData)
 
-                    //Update the LiveData
-                    mutableMoviesLiveData.postValue(data)
+                    //Update the LiveData with content
+                    mutableContentDataLiveData.postValue(data)
 
                     Log.i("Movie title: ", movieData.movieTitle)
                     Log.i("Movie poster: ", movieData.imageUrl)
                 }
                     Log.i(
                         "Repo class: ",
-                        "mutuableMoviesLiveData has " + mutableMoviesLiveData.value?.size.toString() + " items."
+                        "mutuableMoviesLiveData has " + mutableContentDataLiveData.value?.size.toString() + " items."
                     )
 
             } catch (n: NullPointerException) {
@@ -97,8 +98,8 @@ class MyRepository {
     }
 
     // This ensures that only the repository can cause a change
-    fun getMutableMoviesLiveData(): LiveData<List<Movies>> {
-        Log.i("Repo class", "getMoviesLiveData() called.")
-        return mutableMoviesLiveData
+    fun getMutableMoviesLiveData(): LiveData<List<ContentData>> {
+        Log.i("Repo class", "getMoviesLiveData() called." + mutableContentDataLiveData.value.toString())
+        return mutableContentDataLiveData
     }
 }

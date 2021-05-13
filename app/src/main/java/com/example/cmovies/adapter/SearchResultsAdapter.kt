@@ -11,10 +11,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.cmovies.MoreDetailsActivity
-import com.example.cmovies.pojo.Movies
+import com.example.cmovies.model.ContentData
 import com.example.cmovies.R
 
- class SearchResultsAdapter(private var context: Context, private var data: List<Movies>
+ class SearchResultsAdapter(private var context: Context, private var data: List<ContentData>
 ) : RecyclerView.Adapter<SearchResultsAdapter.SearchResultsViewHolder>() {
 
     private val TAG = SearchResultsAdapter::class.java.simpleName

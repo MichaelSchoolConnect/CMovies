@@ -5,21 +5,21 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.cmovies.pojo.Movies
+import com.example.cmovies.model.ContentData
 import com.example.cmovies.repo.MyRepository
 
 
-class MoviesViewModel(application: Application) : AndroidViewModel(application) {
+class ContentViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val movies: MutableLiveData<List<Movies>> by lazy {
-        MutableLiveData<List<Movies>>().also {
+    private val contentData: MutableLiveData<List<ContentData>> by lazy {
+        MutableLiveData<List<ContentData>>().also {
             performAsyncOp()
         }
     }
 
-    fun getMoviesData(): LiveData<List<Movies>>? {
+    fun getMoviesData(): LiveData<List<ContentData>>? {
         Log.i("ViewModel", "getMoviesData")
-        return movies
+        return contentData
     }
 
     private fun performAsyncOp() {

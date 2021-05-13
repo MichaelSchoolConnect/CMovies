@@ -1,6 +1,5 @@
 package com.example.cmovies
 
-import android.R.string
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -12,8 +11,6 @@ import android.widget.CheckBox
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
-import java.lang.StringBuilder
-import java.lang.reflect.Array.get
 
 
 private lateinit var sharedPreferences: SharedPreferences
