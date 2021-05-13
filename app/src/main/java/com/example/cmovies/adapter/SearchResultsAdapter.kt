@@ -1,68 +1,65 @@
 package com.example.cmovies.adapter
 
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
-import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.example.cmovies.MoreDetailsActivity
 import com.example.cmovies.pojo.Movies
 import com.example.cmovies.R
 
-class SearchResultsAdapter internal constructor(
-    context: Context?,
-    listItems: LiveData<List<Movies?>?>?
-) : RecyclerView.Adapter<SearchResultsAdapter.SearchResultsViewHolder>()  {
+ class SearchResultsAdapter(private var context: Context, private var data: List<Movies>
+) : RecyclerView.Adapter<SearchResultsAdapter.SearchResultsViewHolder>() {
 
     private val TAG = SearchResultsAdapter::class.java.simpleName
-
-    private var context: Context? = null
-    private var inflater: LayoutInflater? = null;
-
-    private var data: List<Movies> = emptyList<Movies>()
-
-
 
     // Inflate the layout when ViewHolder is created.
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchResultsViewHolder {
         Log.i(TAG, "Inflating the layout.")
-        val view = LayoutInflater.from(context).inflate(R.layout.search_results_layout, parent, false)
+        val view = LayoutInflater.from(context).inflate(R.layout.search_results_layout_item, parent, false)
         return SearchResultsViewHolder(view)
     }
 
-
     // return total item from List
     override fun getItemCount(): Int {
+        if(data.isEmpty()){
+            Log.i(TAG, "List is empty.")
+        }else{}
         return data.size
     }
 
     // Bind data
     override fun onBindViewHolder(holder: SearchResultsViewHolder, position: Int) {
         Log.i(TAG, "Binding data.")
-        // Get houses position of item in recyclerview to bind data and assign values from list
-        val housesViewHolder: SearchResultsViewHolder = holder as SearchResultsViewHolder
-        val houses = data[position]
-        housesViewHolder.movieName.text = houses.movieTitle
 
-        //Get image from url
-        /*Glide.with(this@MainActivity)
-            .load(url)
+        val contentViewHolder: SearchResultsViewHolder = holder
+        val content = data[position]
+        contentViewHolder.movieName.text = content.movieTitle
+
+        //Load image from url
+        Glide.with(context)
+            .load(content.imageUrl)
             .placeholder(R.drawable.ic_launcher_background)
-            .into(imageView)*/
+            .into(contentViewHolder.poster)
 
         //Set the Recyclerview onClick and pass data to an Intent
         holder.itemView.setOnClickListener {
-            Log.i(TAG, "Position: " + position + "Movie Name: " + houses.movieTitle)
-            /* val intent = Intent(context, HousesInfoActivity::class.java)
-             intent.putExtra("id", houses.id)
-             context!!.startActivity(intent)*/
+            Log.i(TAG, "Position: " + position + "Movie Name: " + content.movieTitle)
+             val intent = Intent(context, MoreDetailsActivity::class.java)
+             intent.putExtra("Title", content.movieTitle)
+             context.startActivity(intent)
         }
     }
 
     inner class SearchResultsViewHolder (itemView : View) : RecyclerView.ViewHolder(itemView){
         //Holds the text view
-        val movieName : TextView = itemView.findViewById(R.id.houses_info_tv1)
+        val movieName : TextView = itemView.findViewById(R.id.more_details_title_name)
+        val poster : ImageView = itemView.findViewById(R.id.more_details_poster)
     }
 }

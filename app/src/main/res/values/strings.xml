@@ -5,5 +5,11 @@
     This string is used for square devices and overridden by hello_world in
     values-round/strings.xml for round devices.
     -->
-    <string name="hello_world">Hello Square World!</string>
+    <string name="hello_world">CarTrack</string>
+    <string name="connect_to_internet">Connect to internet.</string>
+    <string name="search">Search</string>
+    <string name="series">Series</string>
+    <string name="movies">Movie</string>
+    <string name="v1_0937">V1.0937</string>
+    <string name="john_doe">John Doe</string>
 </resources>

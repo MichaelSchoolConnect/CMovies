@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    tools:context=".SearchActivity">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="674dp"
+        android:layout_height="87dp"
+        android:gravity="center"
+        android:text="@string/hello_world"
+        android:textColor="@color/black"
+        android:textSize="80sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.505"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.23" />
+
+    <EditText
+        android:id="@+id/editTextTextUrl"
+        android:layout_width="550dp"
+        android:layout_height="83dp"
+        android:layout_marginTop="106dp"
+        android:background="@drawable/bg"
+        android:drawableStart="@drawable/ic_action_name"
+        android:elevation="2dp"
+        android:ems="10"
+        android:textColor="@color/blue"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <CheckBox
+        android:id="@+id/radioButton"
+        android:layout_width="164dp"
+        android:layout_height="46dp"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="66dp"
+        android:text="@string/series"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="@+id/editTextTextUrl"
+        app:layout_constraintTop_toBottomOf="@+id/editTextTextUrl" />
+
+    <CheckBox
+        android:id="@+id/radioButton2"
+        android:layout_width="155dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="66dp"
+        android:layout_marginEnd="26dp"
+        android:text="@string/movies"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="@+id/editTextTextUrl"
+        app:layout_constraintTop_toBottomOf="@+id/editTextTextUrl" />
+
+    <Button
+        android:id="@+id/searchBtn"
+        android:layout_width="336dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="228dp"
+        android:background="@drawable/btn_bg"
+        android:text="@string/search"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="@+id/radioButton2"
+        app:layout_constraintHorizontal_bias="0.285"
+        app:layout_constraintStart_toStartOf="@+id/radioButton"
+        app:layout_constraintTop_toBottomOf="@+id/radioButton" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="119dp"
+        android:layout_height="105dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_action_account" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="236dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="136dp"
+        android:gravity="center"
+        android:text="@string/v1_0937"
+        android:textSize="24sp"
+        app:drawableStartCompat="@drawable/ic_action_copyright"
+        app:layout_constraintStart_toStartOf="@+id/searchBtn"
+        app:layout_constraintTop_toBottomOf="@+id/searchBtn" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="174dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="44dp"
+        android:text="@string/john_doe"
+        android:textSize="24sp"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="119dp"
+        android:layout_height="105dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_action_settings" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

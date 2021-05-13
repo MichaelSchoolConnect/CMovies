@@ -1,7 +1,12 @@
 package com.example.cmovies.network
 
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
+import android.util.Log
+import androidx.core.content.ContextCompat.getSystemService
+import com.example.cmovies.thread.AppExecutors
 import java.io.IOException
 import java.io.InputStream
 import java.net.HttpURLConnection
@@ -11,11 +16,6 @@ import java.net.URL
 import java.util.*
 
 class NetworkUtils {
-    private var context: Context? = null
-
-    fun NetworkUtils(context: Context) {
-        this.context = context
-    }
 
     companion object{
         /**
@@ -23,14 +23,24 @@ class NetworkUtils {
          *
          * @return The Boolean to confirm if we're connected to the internet or not.
          */
-        fun isInternetAvailable(): Boolean {
-            return try {
-                val ipAddr: InetAddress = InetAddress.getByName("google.com")
-                //You can replace it with your name
-                !ipAddr.equals("")
-            } catch (e: Exception) {
-                false
+        fun isInternetAvailable(context: Context): Boolean {
+            val connectivityManager =
+                context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val capabilities =
+                connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+            if (capabilities != null) {
+                if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                    Log.i("Internet", "NetworkCapabilities.TRANSPORT_CELLULAR")
+                    return true
+                } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                    Log.i("Internet", "NetworkCapabilities.TRANSPORT_WIFI")
+                    return true
+                } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
+                    Log.i("Internet", "NetworkCapabilities.TRANSPORT_ETHERNET")
+                    return true
+                }
             }
+            return false
         }
 
         /**
@@ -39,7 +49,8 @@ class NetworkUtils {
          * @return The URL to use to query the Harry Potter API.
          */
         fun buildUrl(endpoint: String?): URL? {
-            //We are building a url this way to cinvert Android based url to Java.
+            Log.i("NetworkUtils: ", "buildUrl()")
+            //We are building a url this way to convert Android based url to Java.
             //Also the methods buildUpon and build() reduce
             val buildUri: Uri = Uri.parse(endpoint).buildUpon().build()
             var url: URL? = null
@@ -53,12 +64,13 @@ class NetworkUtils {
 
         @Throws(IOException::class)
         fun getResponseFromHttpUrl(url: URL): String? {
+            Log.i("NetworkUtils: ", "getResponseFromHttpUrl()")
             //Create HTTPURLConnection object.
             val urlConnection: HttpURLConnection = url.openConnection() as HttpURLConnection
             return try {
-                val `in`: InputStream = urlConnection.getInputStream()
+                val `in`: InputStream = urlConnection.inputStream
 
-                //*This buffers the data, handles character encoding and allocates and dellocates the
+                //*This buffers the data, handles character encoding and allocates and de-allocates the
                 //*//buffers as needed
                 val scanner = Scanner(`in`)
                 scanner.useDelimiter("\\A")

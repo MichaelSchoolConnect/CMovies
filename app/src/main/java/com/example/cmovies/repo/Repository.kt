@@ -1,27 +1,26 @@
 package com.example.cmovies.repo
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.preference.PreferenceManager
 import com.example.cmovies.network.NetworkUtils
 import com.example.cmovies.pojo.Movies
 import com.example.cmovies.thread.AppExecutors
-import org.json.JSONArray
 import org.json.JSONException
+import org.json.JSONObject
 import java.io.IOException
 import java.net.URL
 
 
 class MyRepository {
-    //URL that points to the houses JSON
-    private val HOUSES_ENDPOINT =
-        "http://www.omdbapi.com/?t=Mortal+kombat"
 
-    private val mutableHousesLiveData =
-        MutableLiveData<LiveData<List<Movies?>?>?>()
+    private val mutableMoviesLiveData: MutableLiveData<List<Movies>> = MutableLiveData<List<Movies>>()
 
     companion object{
         fun getInstance(): MyRepository? {
+            Log.i("Repo class: ", "getInstance() called.")
             var instance: MyRepository? = null
             if (instance == null) {
                 synchronized(MyRepository::class.java) {
@@ -34,56 +33,72 @@ class MyRepository {
         }
     }
 
-    // This ensures that only the repository can cause a change
-    fun getHousesLiveData(): MutableLiveData<LiveData<List<Movies?>?>?> {
-        return mutableHousesLiveData
+    private fun appendUrl(context: Context): String {
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+        val searchString : String = sharedPreferences.getString("urlString", "").toString()
+        return "http://www.omdbapi.com/?s=${searchString}&apikey=3dfd2fcb&t"
     }
+
 
     /**
      * This method gets called from an Activity's onCreate method.
      * It fetches data off the main thread using an Executor(Runnable object)
      */
-    fun getHouses() {
+    fun getMovies(context: Context) {
         //I made this into a local variable so it can be killed after calling this method to save resources.
+        val searchList = appendUrl(context)
         val executors = AppExecutors()
-        executors.diskIO()?.execute(Runnable {
+        executors.executorService.execute {
+            Log.i("Repo class: ", "getMovies() function is called.")
             val data: MutableList<Movies> = ArrayList()
-            val data1: List<Movies> = ArrayList()
-            val url: URL = NetworkUtils.buildUrl(HOUSES_ENDPOINT)!!
+            val url: URL = NetworkUtils.buildUrl(searchList)!!
             var result: String? = null
+
             try {
                 result = NetworkUtils.getResponseFromHttpUrl(url)
+                //Log.i("Repo results: ", "$result")
             } catch (e: IOException) {
+                Log.i("Repo network: ", e.printStackTrace().toString())
                 e.printStackTrace()
             }
-            println("Repo results: $result")
-            var jArray: JSONArray? = null
+
             try {
-                jArray = JSONArray(result)
-                for (i in 0 until jArray.length()) {
+                val jsonObject = JSONObject(result.toString())
+                val jsonArray = jsonObject.getJSONArray("Search")
+                for(i in 0 until jsonArray.length()){
 
                     //Get objects from the JSONArray.
-                    val jsonObject = jArray.getJSONObject(i)
+                    val item = jsonArray.getJSONObject(i)
+                    val movieData = Movies(item.getString("Poster"),item.getString("Title"))
 
-                    //Initialize an object of the class House so we can append data to it.
-                    val houseData = Movies("")
+                    //Add the data into an ArrayList.
+                    data.add(movieData)
 
-                    //Set data to references.
-                    houseData.movieTitle = jsonObject.getString("Title")
+                    //Update the LiveData
+                    mutableMoviesLiveData.postValue(data)
 
-                    //Store the data into an ArrayList.
-                    data.add(houseData)
-
-                    //Post the value(s) of the data to the LiveData Object.
-                    mutableHousesLiveData.value
-                    Log.i("Repo: ", houseData.toString())
+                    Log.i("Movie title: ", movieData.movieTitle)
+                    Log.i("Movie poster: ", movieData.imageUrl)
                 }
-            } catch (j: NullPointerException) {
-                j.printStackTrace()
+                    Log.i(
+                        "Repo class: ",
+                        "mutuableMoviesLiveData has " + mutableMoviesLiveData.value?.size.toString() + " items."
+                    )
+
+            } catch (n: NullPointerException) {
+                n.printStackTrace()
+                Log.i("Repo class: ", n.printStackTrace().toString())
             } catch (j: JSONException) {
                 j.printStackTrace()
+                Log.i("Repo class: ", j.printStackTrace().toString())
             }
-        })
+        }
+
     }
 
+    // This ensures that only the repository can cause a change
+    fun getMutableMoviesLiveData(): LiveData<List<Movies>> {
+        Log.i("Repo class", "getMoviesLiveData() called.")
+        return mutableMoviesLiveData
+    }
 }
