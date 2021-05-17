@@ -5,6 +5,9 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.preference.PreferenceManager
+import com.example.cmovies.database.entity.ContentDataDao
+import com.example.cmovies.database.entity.ContentDataDatabase
+import com.example.cmovies.database.entity.ContentDataEntity
 import com.example.cmovies.network.NetworkUtils
 import com.example.cmovies.model.ContentData
 import com.example.cmovies.thread.AppExecutors
@@ -18,6 +21,14 @@ class MyRepository {
 
     private val mutableContentDataLiveData: MutableLiveData<List<ContentData>> =
             MutableLiveData<List<ContentData>>()
+
+    // Offline
+    private var getAllOfflineData: MutableLiveData<List<ContentDataEntity>>? = null
+
+    init {
+        // Get data from the offline database.
+
+    }
 
     companion object{
         fun getInstance(): MyRepository? {
@@ -39,13 +50,12 @@ class MyRepository {
         val searchString : String = sharedPreferences.getString("urlString", "").toString()
         return "http://www.omdbapi.com/?s=${searchString}&apikey=3dfd2fcb&t"
     }
-
-
+    
     /**
      * This method gets called from an Activity's onCreate method.
      * It fetches data off the main thread using an Executor(Runnable object)
      */
-    fun getMovies(context: Context) {
+    fun getContent(context: Context) {
         //I made this into a local variable so it can be killed after calling this method to save resources.
         val searchList = appendUrl(context)
         val executors = AppExecutors()
@@ -77,14 +87,9 @@ class MyRepository {
 
                     //Update the LiveData with content
                     mutableContentDataLiveData.postValue(data)
-
-                    Log.i("Movie title: ", movieData.movieTitle)
-                    Log.i("Movie poster: ", movieData.imageUrl)
+                   // Log.i("Repo", movieData.movieTitle)
                 }
-                    Log.i(
-                        "Repo class: ",
-                        "mutuableMoviesLiveData has " + mutableContentDataLiveData.value?.size.toString() + " items."
-                    )
+                Log.i("Repo mutable size", mutableContentDataLiveData.value?.size.toString())
 
             } catch (n: NullPointerException) {
                 n.printStackTrace()
@@ -94,12 +99,18 @@ class MyRepository {
                 Log.i("Repo class: ", j.printStackTrace().toString())
             }
         }
-
     }
 
     // This ensures that only the repository can cause a change
     fun getMutableMoviesLiveData(): LiveData<List<ContentData>> {
-        Log.i("Repo class", "getMoviesLiveData() called." + mutableContentDataLiveData.value.toString())
+        Log.i("Repo class", "getMoviesLiveData() called."
+                + mutableContentDataLiveData.value?.size.toString())
         return mutableContentDataLiveData
+    }
+
+    //Gets called when there no internet connection. Caching
+    fun getDataFromOfflineDB(): LiveData<List<ContentDataEntity>>? {
+        Log.i("Repository", "Reading from the DataBase")
+        return getAllOfflineData
     }
 }

@@ -1,5 +1,5 @@
 package com.example.cmovies.model
 
-data class ContentData(var imageUrl: String, var movieTitle: String) {
+data class ContentData(var poster: String, var movieTitle: String) {
 
 }

@@ -11,13 +11,26 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.cmovies.MoreDetailsActivity
-import com.example.cmovies.model.ContentData
 import com.example.cmovies.R
+import com.example.cmovies.database.entity.ContentDataDatabase
+import com.example.cmovies.database.entity.ContentDataEntity
+import com.example.cmovies.model.ContentData
+import com.example.cmovies.thread.AppExecutors
 
- class SearchResultsAdapter(private var context: Context, private var data: List<ContentData>
+
+
+
+class SearchResultsAdapter(private var context: Context, private var list: List<ContentData>
 ) : RecyclerView.Adapter<SearchResultsAdapter.SearchResultsViewHolder>() {
 
     private val TAG = SearchResultsAdapter::class.java.simpleName
+
+    // Member variable for the Database
+    private var mDb: ContentDataDatabase? = null
+
+     init {
+         mDb = ContentDataDatabase.getInstance(context);
+     }
 
     // Inflate the layout when ViewHolder is created.
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchResultsViewHolder {
@@ -26,27 +39,32 @@ import com.example.cmovies.R
         return SearchResultsViewHolder(view)
     }
 
+    private fun insertOfflineData(poster: String, title: String) {
+        val offlineDataEntity = ContentDataEntity(poster, title)
+        val executors = AppExecutors()
+        executors.executorService.execute {
+            Log.i(TAG, "data inserted in offline db")
+            mDb?.contentDatabaseDao()?.insert(offlineDataEntity)
+        }
+    }
+
     // return total item from List
     override fun getItemCount(): Int {
-        if(data.isEmpty()){
-            Log.i(TAG, "List is empty.")
-        }else{}
-        return data.size
+        return list.size
     }
 
     // Bind data
     override fun onBindViewHolder(holder: SearchResultsViewHolder, position: Int) {
         Log.i(TAG, "Binding data.")
 
-        val contentViewHolder: SearchResultsViewHolder = holder
-        val content = data[position]
-        contentViewHolder.movieName.text = content.movieTitle
+        val content = list[position]
+        holder.movieTitle.text = content.movieTitle
 
         //Load image from url
         Glide.with(context)
-            .load(content.imageUrl)
+            .load(content.poster)
             .placeholder(R.drawable.ic_launcher_background)
-            .into(contentViewHolder.poster)
+            .into(holder.poster)
 
         //Set the Recyclerview onClick and pass data to an Intent
         holder.itemView.setOnClickListener {
@@ -55,11 +73,13 @@ import com.example.cmovies.R
              intent.putExtra("Title", content.movieTitle)
              context.startActivity(intent)
         }
+
+        insertOfflineData(content.poster, content.movieTitle)
     }
 
-    inner class SearchResultsViewHolder (itemView : View) : RecyclerView.ViewHolder(itemView){
-        //Holds the text view
-        val movieName : TextView = itemView.findViewById(R.id.more_details_title_name)
-        val poster : ImageView = itemView.findViewById(R.id.more_details_poster)
+     class SearchResultsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
+        //Holds the views
+        val movieTitle : TextView = itemView.findViewById(R.id.more_details_title_name_offline)
+        val poster : ImageView = itemView.findViewById(R.id.more_details_poster_offline)
     }
 }
